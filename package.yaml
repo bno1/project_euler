@@ -40,4 +40,5 @@ tests:
     source-dirs: test
     dependencies:
     - hspec >= 2.6 && < 3
+    - QuickCheck >= 2.12 && < 3
     - project-euler
