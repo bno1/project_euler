@@ -1,5 +1,10 @@
 module Common where
 
+import Control.Monad
+import Data.Array.ST (runSTUArray)
+import qualified Data.Array.MArray as MA
+import qualified Data.Array.IArray as IA
+
 goldenRatio :: Double
 goldenRatio = 1.6180339887498948482045868343656381177203091798057628621354486
 
@@ -58,3 +63,16 @@ reverseNum n = let
 
 isPalindrome :: (Integral a) => a -> Bool
 isPalindrome n = n == reverseNum n
+
+sieve :: (Integral a) => a -> [a]
+sieve n = let
+    (lb, ub) = (2, fromIntegral n) :: (Word, Word)
+    arr = runSTUArray $ do
+      m <- MA.newArray (lb, ub) True
+      forM_ [lb..ub] $ \i -> do
+        v <- MA.readArray m i
+        when v $ forM_ [i*2,i*3..ub] $ \j -> MA.writeArray m j False
+
+      return m
+  in
+    [ fromIntegral i | (i, e) <- IA.assocs arr, e]
