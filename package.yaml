@@ -19,9 +19,14 @@ description:         Please see the README on GitHub at <https://github.com/bno1
 
 dependencies:
 - base >= 4.7 && < 5
+- hspec >= 2.6 && < 3
+- QuickCheck >= 2.12 && < 3
 
 library:
   source-dirs: src
+
+ghc-options:
+  -Wall
 
 executables:
   project-euler-exe:
@@ -39,6 +44,4 @@ tests:
     main: Spec.hs
     source-dirs: test
     dependencies:
-    - hspec >= 2.6 && < 3
-    - QuickCheck >= 2.12 && < 3
     - project-euler

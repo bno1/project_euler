@@ -38,3 +38,23 @@ fastFibLt n = if fastFib k >= n then k - 1 else k
 
 fastFibSum :: (Integral a) => a -> a
 fastFibSum n = fastFib (n + 2) - 1
+
+eliminateFactor :: (Integral a) => a -> a -> a
+eliminateFactor _ 0 = 0
+eliminateFactor 1 n = n
+eliminateFactor (-1) n = -n
+eliminateFactor k n
+  | r == 0 = eliminateFactor k d
+  | otherwise = n
+  where
+    (d, r) = n `quotRem` k
+
+reverseNum :: (Integral a) => a -> a
+reverseNum n = let
+    step 0 b = b
+    step a b = let (d, r) = a `quotRem` 10 in step d (b * 10 + r)
+  in
+    step n 0
+
+isPalindrome :: (Integral a) => a -> Bool
+isPalindrome n = n == reverseNum n
