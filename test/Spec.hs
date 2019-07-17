@@ -7,6 +7,8 @@ main :: IO ()
 main = hspec $ do
   describe "Common functions" $ do
     it "nSum" $ property $ \n -> nSum (n :: Int) == sum [1..n]
+    it "nSum2" $ property $ \n ->
+      nSum2 (n :: Int) == sum (map (\i -> i*i) [1..n])
 
     it "sumOfMults" $ property $
       \n lim -> (n > 0) ==>
@@ -50,3 +52,4 @@ main = hspec $ do
     it "Solves #2" $ runProblem 2 `shouldBe` "4613732"
     it "Solves #3" $ runProblem 3 `shouldBe` "6857"
     it "Solves #4" $ runProblem 4 `shouldBe` "906609"
+    it "Solves #6" $ runProblem 6 `shouldBe` "25164150"

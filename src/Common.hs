@@ -19,6 +19,11 @@ nSum n
   | n > 0 = n * (n + 1) `quot` 2
   | otherwise = 0
 
+nSum2 :: (Integral a) => a -> a
+nSum2 n
+  | n > 0 = n * (n + 1) * (2 * n + 1) `quot` 6
+  | otherwise = 0
+
 sumOfMults :: (Integral a) => a -> a -> a
 sumOfMults limit n
   | limit <= 0 = 0
