@@ -90,6 +90,10 @@ main = hspec $ do
     it "nThPrime" $ forAll (choose (0, 1000)) $ \n ->
       allPrimes !! n == fst (nThPrime n (newSieve 100))
 
+    it "runSieveUntil" $ forAll (choose (0, 2000)) $ \b ->
+      forAll (choose (0, b * 100)) $ \n ->
+        n <= sivPosition (runSieveUntil (newSieve b) n)
+
   describe "runProblem" $ do
     it "Fails gracefully" $ runProblem 999999 `shouldBe` "Unknown problem"
     it "Solves #1" $ runProblem 1 `shouldBe` "233168"
@@ -101,3 +105,4 @@ main = hspec $ do
     it "Solves #7" $ runProblem 7 `shouldBe` "104743"
     it "Solves #8" $ runProblem 8 `shouldBe` "23514624000"
     it "Solved #9" $ runProblem 9 `shouldBe` "31875000"
+    it "Solved #10" $ runProblem 10 `shouldBe` "142913828922"

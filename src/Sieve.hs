@@ -4,6 +4,7 @@ module Sieve where
 
 import Data.Word
 import Control.Monad (when, forM_)
+import Data.Foldable (toList)
 import qualified Data.Sequence as S
 import Control.Monad.ST.Strict (ST, runST)
 import qualified Data.Array.MArray as MA
@@ -51,3 +52,10 @@ nThPrime :: Int -> Sieve -> (Word64, Sieve)
 nThPrime n sieve@(Sieve primes _ _)
   | n < S.length primes = (S.index primes n, sieve)
   | otherwise = nThPrime n $ runSieve sieve
+
+runSieveUntil :: Sieve -> Word64 -> Sieve
+runSieveUntil s n =
+  head $ dropWhile (\s' -> sivPosition s' <= n) $ iterate runSieve s
+
+sivPrimesList :: Sieve -> [Word64]
+sivPrimesList = toList . sivPrimes
