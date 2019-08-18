@@ -1,5 +1,6 @@
 module Common where
 
+import Prelude hiding (gcd)
 import Control.Monad
 import Data.Array.ST (runSTUArray)
 import qualified Data.Array.MArray as MA
@@ -81,3 +82,18 @@ sieve n = let
       return m
   in
     [ fromIntegral i | (i, e) <- IA.assocs arr, e]
+
+gcd :: (Integral a) => a -> a -> a
+gcd a b
+  | b == 0 = a
+  | otherwise = gcd b (a `rem` b)
+
+primPythTripletsGen :: (Integral a) => a -> a -> [(a, a, a)]
+primPythTripletsGen m n
+  | n >= m = primPythTripletsGen (m + 1) (if even m then 2 else 1)
+  | gcd m n == 1 = (m * m - n * n, 2 * m * n, m * m + n * n) :
+                   primPythTripletsGen m (n + 2)
+  | otherwise = primPythTripletsGen m (n + 2)
+
+primPythTriplets :: (Integral a) => [(a, a, a)]
+primPythTriplets = primPythTripletsGen 2 1

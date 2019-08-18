@@ -1,3 +1,5 @@
+import Prelude hiding (gcd)
+
 import Test.Hspec
 import Test.QuickCheck
 
@@ -11,6 +13,14 @@ import Sieve
 allPrimes :: [Word64]
 allPrimes = 2:[p | p <- [3,5..], all (\i -> p `rem` i /= 0) $
                takeWhile (\i -> 2 * i < p) allPrimes]
+
+first10PrimPythTrips :: [(Int, Int, Int)]
+first10PrimPythTrips = [
+  (3, 4, 5), (5, 12, 13), (15, 8, 17), (7, 24, 25), (21, 20, 29), (9, 40, 41),
+  (35, 12, 37), (11, 60, 61), (45, 28, 53), (33, 56, 65), (13, 84, 85),
+  (63, 16, 65), (55, 48, 73), (39, 80, 89), (15, 112, 113), (77, 36, 85)
+  ]
+
 
 main :: IO ()
 main = hspec $ do
@@ -53,6 +63,19 @@ main = hspec $ do
           m = eliminateFactor 10 n
         in m == reverseNum (reverseNum (m :: Int))
 
+    it "gcd" $ property $
+      \a b -> let
+          c = gcd a (b :: Int)
+        in (a == 0 && b == 0 && c == 0) || (a `rem` c == 0 && b `rem` c == 0)
+
+    it "primPythTriplets 16" $ first10PrimPythTrips == take 16 primPythTriplets
+
+    it "primPythTriplets many" $ let
+        trips = (take 100000 primPythTriplets) :: [(Int, Int, Int)]
+        checkTrip (a, b, c) = a * a + b * b == c * c
+        checkPrim (a, b, c) = gcd a (gcd b c) == 1
+      in all (\trip -> checkTrip trip && checkPrim trip) trips
+
   describe "Sieve" $ do
     it "stepSieve" $ forAll (choose (0, 10000)) $
       \n ->let
@@ -77,3 +100,4 @@ main = hspec $ do
     it "Solves #6" $ runProblem 6 `shouldBe` "25164150"
     it "Solves #7" $ runProblem 7 `shouldBe` "104743"
     it "Solves #8" $ runProblem 8 `shouldBe` "23514624000"
+    it "Solved #9" $ runProblem 9 `shouldBe` "31875000"
