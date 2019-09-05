@@ -50,15 +50,18 @@ fastFibLt n = if fastFib k >= n then k - 1 else k
 fastFibSum :: (Integral a) => a -> a
 fastFibSum n = fastFib (n + 2) - 1
 
-eliminateFactor :: (Integral a) => a -> a -> a
-eliminateFactor _ 0 = 0
-eliminateFactor 1 n = n
-eliminateFactor (-1) n = -n
-eliminateFactor k n
-  | r == 0 = eliminateFactor k d
-  | otherwise = n
+countFactorHelper :: (Integral a) => a -> a -> Word -> (a, Word)
+countFactorHelper k n c
+  | r == 0 = countFactorHelper k d $ c + 1
+  | otherwise = (n, c)
   where
     (d, r) = n `quotRem` k
+
+countFactor :: (Integral a) => a -> a -> (a, Word)
+countFactor k n
+  | k < 2 = error "Factor smaller than 1"
+  | n < 2 = error "Negative or zero number"
+  | otherwise = countFactorHelper k n 0
 
 reverseNum :: (Integral a) => a -> a
 reverseNum n = let
@@ -97,3 +100,6 @@ primPythTripletsGen m n
 
 primPythTriplets :: (Integral a) => [(a, a, a)]
 primPythTriplets = primPythTripletsGen 2 1
+
+iSqrt :: (Integral a) => a -> a
+iSqrt = ceiling . (sqrt :: Double -> Double) . fromIntegral

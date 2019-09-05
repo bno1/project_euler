@@ -13,6 +13,7 @@ import P8 (solveP8)
 import P9 (solveP9)
 import P10 (solveP10)
 import P11 (solveP11)
+import P12 (solveP12)
 
 runProblem :: Int -> String
 runProblem 1 = show solveP1
@@ -26,4 +27,5 @@ runProblem 8 = show solveP8
 runProblem 9 = show solveP9
 runProblem 10 = show solveP10
 runProblem 11 = show solveP11
+runProblem 12 = show solveP12
 runProblem _ = "Unknown problem"

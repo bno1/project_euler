@@ -2,13 +2,16 @@
 
 module Sieve where
 
+import Common
+
 import Data.Word
 import Control.Monad (when, forM_)
 import Data.Foldable (toList)
-import qualified Data.Sequence as S
 import Control.Monad.ST.Strict (ST, runST)
 import qualified Data.Array.MArray as MA
 import qualified Data.Array.ST as STA
+import qualified Data.Sequence as S
+import qualified Control.Monad.State as St
 
 data Sieve = Sieve { sivPrimes :: !(S.Seq Word64)
                    , sivBufSize :: !Word64
@@ -18,8 +21,8 @@ data Sieve = Sieve { sivPrimes :: !(S.Seq Word64)
 newSieve :: Word64 -> Sieve
 newSieve stepSize = Sieve (S.singleton 2) stepSize 3
 
-runSieve :: Sieve -> Sieve
-runSieve (Sieve primes bufSize pos) = let
+runSieve :: St.State Sieve ()
+runSieve = St.modify $ \(Sieve primes bufSize pos) -> let
     removeMults m !p !i = when (i < bufSize) $ do
         MA.writeArray m i False
         removeMults m p (i + p)
@@ -48,14 +51,35 @@ runSieve (Sieve primes bufSize pos) = let
 
     return $ Sieve (primes S.>< newPrimes) bufSize (pos + 2 * bufSize)
 
-nThPrime :: Int -> Sieve -> (Word64, Sieve)
-nThPrime n sieve@(Sieve primes _ _)
-  | n < S.length primes = (S.index primes n, sieve)
-  | otherwise = nThPrime n $ runSieve sieve
+nThPrime :: Int -> St.State Sieve Word64
+nThPrime n = do
+  (Sieve primes _ _) <- St.get
+  if n < S.length primes then return $ S.index primes n
+  else runSieve >> nThPrime n
 
-runSieveUntil :: Sieve -> Word64 -> Sieve
-runSieveUntil s n =
-  head $ dropWhile (\s' -> sivPosition s' <= n) $ iterate runSieve s
+runSieveUntil :: Word64 -> St.State Sieve ()
+runSieveUntil n = do
+  (Sieve _ _ pos) <- St.get
+  when (pos <= n) $ runSieve >> runSieveUntil n
 
 sivPrimesList :: Sieve -> [Word64]
 sivPrimesList = toList . sivPrimes
+
+sivFactorize :: Word64 -> St.State Sieve (S.Seq (Word64, Word))
+sivFactorize n = let
+    nlim = iSqrt n
+    factorize k next = do
+      (v, lim, factors) <- St.get
+      when (k <= lim) $ do
+        let (d, c) = countFactorHelper k v 0
+        when (c /= 0) $ St.put (d, iSqrt d, factors S.|> (k, c))
+
+        next
+  in do
+    runSieveUntil nlim
+
+    comp <- St.gets $ foldr factorize (return ()) . sivPrimes
+
+    let (d, _, factors) = St.execState comp (n, nlim, S.empty)
+
+    return $ if d /= 1 then factors S.|> (d, 1) else factors

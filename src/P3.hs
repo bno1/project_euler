@@ -12,7 +12,7 @@ primeFactors n = let
     step i [] = [i]
     step i (k:ks)
       | k > i = []
-      | i `rem` k == 0 = k:step (eliminateFactor k i) ks
+      | i `rem` k == 0 = k:step (fst $ countFactor k i) ks
       | otherwise = step i ks
   in
     step n $ 2:[3,5..limit]

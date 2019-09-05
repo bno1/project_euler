@@ -4,12 +4,16 @@ module P10
 
 import Sieve
 import Data.Word (Word64)
+import qualified Control.Monad.State as St
 
 bound :: Word64
 bound = 2000000
 
+sieve :: Sieve
+sieve = St.execState (runSieveUntil bound) $ newSieve 100000
+
 primes :: [Word64]
-primes = takeWhile (<bound) $ sivPrimesList $ runSieveUntil (newSieve 100000) bound
+primes = takeWhile (<bound) $ sivPrimesList sieve
 
 solveP10 :: Word64
 solveP10 = sum primes

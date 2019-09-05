@@ -10,6 +10,8 @@ import Lib
 import Common
 import Sieve
 
+import qualified Control.Monad.State as St
+
 allPrimes :: [Word64]
 allPrimes = 2:[p | p <- [3,5..], all (\i -> p `rem` i /= 0) $
                takeWhile (\i -> 2 * i < p) allPrimes]
@@ -20,6 +22,13 @@ first10PrimPythTrips = [
   (35, 12, 37), (11, 60, 61), (45, 28, 53), (33, 56, 65), (13, 84, 85),
   (63, 16, 65), (55, 48, 73), (39, 80, 89), (15, 112, 113), (77, 36, 85)
   ]
+
+
+iterateNM :: (Applicative f) => Int -> f a -> f a
+iterateNM n f
+  | n == 1 = f
+  | n < 1 = error "impossible"
+  | otherwise = f *> iterateNM (n - 1) f
 
 
 main :: IO ()
@@ -51,17 +60,16 @@ main = hspec $ do
           k = fastFibLt (n :: Int)
         in fastFib k < n && fastFib (k + 1) >= n
 
-    it "eliminateFactor" $ property $
-      \n k -> (k /= 0 && n /= 0) ==> let
-          m = eliminateFactor k (n :: Int)
-          (d, r) = n `quotRem` m
+    it "countFactor" $ forAll (choose (0, 100000)) $ \n ->
+      forAll (choose (2, 100000)) $ \k -> let
+          (d, c) = countFactor k (n :: Int)
         in
-          r == 0 && eliminateFactor k d == 1
+          d * k ^ c == n && countFactor k d == (d, 0)
 
     it "reverseNum" $ property $
       \n -> let
-          m = eliminateFactor 10 n
-        in m == reverseNum (reverseNum (m :: Int))
+          m = if n > 1 then fst (countFactor 10 n) else n
+        in m == reverseNum (reverseNum (m :: Word))
 
     it "gcd" $ property $
       \a b -> let
@@ -71,28 +79,28 @@ main = hspec $ do
     it "primPythTriplets 16" $ first10PrimPythTrips == take 16 primPythTriplets
 
     it "primPythTriplets many" $ let
-        trips = (take 100000 primPythTriplets) :: [(Int, Int, Int)]
+        trips = take 100000 primPythTriplets :: [(Int, Int, Int)]
         checkTrip (a, b, c) = a * a + b * b == c * c
         checkPrim (a, b, c) = gcd a (gcd b c) == 1
       in all (\trip -> checkTrip trip && checkPrim trip) trips
 
   describe "Sieve" $ do
     it "stepSieve" $ forAll (choose (0, 10000)) $
-      \n ->let
-          sPrimes = toList $ sivPrimes $ runSieve (newSieve n)
+      \n -> let
+          sPrimes = toList $ sivPrimes $ St.execState runSieve (newSieve n)
         in all (uncurry (==)) $ zip allPrimes sPrimes
 
     it "runSieve" $ forAll (choose (0, 2000)) $ \n ->
       forAll (choose (1, 10)) $ \s -> let
-          sPrimes = toList $ sivPrimes $ iterate runSieve (newSieve n) !! s
+          sPrimes = toList $ sivPrimes $ St.execState (iterateNM s runSieve) (newSieve n)
         in sPrimes == takeWhile (\p -> p < 3 + fromIntegral s * 2 * n) allPrimes
 
     it "nThPrime" $ forAll (choose (0, 1000)) $ \n ->
-      allPrimes !! n == fst (nThPrime n (newSieve 100))
+      allPrimes !! n == St.evalState (nThPrime n) (newSieve 100)
 
     it "runSieveUntil" $ forAll (choose (0, 2000)) $ \b ->
       forAll (choose (0, b * 100)) $ \n ->
-        n <= sivPosition (runSieveUntil (newSieve b) n)
+        n <= sivPosition (St.execState (runSieveUntil n) (newSieve b))
 
   describe "runProblem" $ do
     it "Fails gracefully" $ runProblem 999999 `shouldBe` "Unknown problem"
@@ -107,3 +115,4 @@ main = hspec $ do
     it "Solves #9" $ runProblem 9 `shouldBe` "31875000"
     it "Solves #10" $ runProblem 10 `shouldBe` "142913828922"
     it "Solves #11" $ runProblem 11 `shouldBe` "70600674"
+    it "Solves #12" $ runProblem 12 `shouldBe` "76576500"
