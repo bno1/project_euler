@@ -7,9 +7,8 @@ import Common
 import Data.Word
 import Control.Monad (when, forM_)
 import Data.Foldable (toList)
-import Control.Monad.ST.Strict (ST, runST)
-import qualified Data.Array.MArray as MA
-import qualified Data.Array.ST as STA
+import Control.Monad.ST.Strict (runST)
+import qualified Data.Vector.Unboxed.Mutable as VUM
 import qualified Data.Sequence as S
 import qualified Control.Monad.State as St
 
@@ -24,22 +23,22 @@ newSieve stepSize = Sieve (S.singleton 2) stepSize 3
 runSieve :: St.State Sieve ()
 runSieve = St.modify $ \(Sieve primes bufSize pos) -> let
     removeMults m !p !i = when (i < bufSize) $ do
-        MA.writeArray m i False
+        VUM.unsafeWrite m (fromIntegral i) False
         removeMults m p (i + p)
 
     walkArray m !i !ps
       | i < bufSize = do
-          v <- MA.readArray m i
+          v <- VUM.unsafeRead m $ fromIntegral i
           if v then do
             let p = i * 2 + pos
             removeMults m p $ i + p
-            walkArray m (i + 1) (ps S.|> p)
+            walkArray m (fromIntegral $ i + 1) (ps S.|> p)
           else
             walkArray m (i + 1) ps
       | otherwise = return ps
 
   in runST $ do
-    m <- MA.newArray (0, bufSize) True :: ST s (STA.STUArray s Word64 Bool)
+    m <- VUM.replicate (fromIntegral bufSize) True
 
     -- return the position of the next multiple of p starting from `position`
     -- magical formula

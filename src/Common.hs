@@ -2,9 +2,8 @@ module Common where
 
 import Prelude hiding (gcd)
 import Control.Monad
-import Data.Array.ST (runSTUArray)
-import qualified Data.Array.MArray as MA
-import qualified Data.Array.IArray as IA
+import qualified Data.Vector.Unboxed as VU
+import qualified Data.Vector.Unboxed.Mutable as VUM
 
 goldenRatio :: Double
 goldenRatio = 1.6180339887498948482045868343656381177203091798057628621354486
@@ -73,18 +72,19 @@ reverseNum n = let
 isPalindrome :: (Integral a) => a -> Bool
 isPalindrome n = n == reverseNum n
 
-sieve :: (Integral a) => a -> [a]
+sieve :: Int -> [Int]
 sieve n = let
-    (lb, ub) = (2, fromIntegral n) :: (Word, Word)
-    arr = runSTUArray $ do
-      m <- MA.newArray (lb, ub) True
-      forM_ [lb..ub] $ \i -> do
-        v <- MA.readArray m i
-        when v $ forM_ [i*2,i*3..ub] $ \j -> MA.writeArray m j False
+    ub = n - 3
+    --(lb, ub) = (2, fromIntegral n) :: (Word, Word)
+    arr = VU.create $ do
+      m <- VUM.replicate (ub + 1) True
+      forM_ [0..ub] $ \i -> do
+        v <- VUM.read m i
+        when v $ forM_ [(i+2)*2,(i+2)*3..ub+2] $ \j -> VUM.write m (j - 2) False
 
       return m
   in
-    [ fromIntegral i | (i, e) <- IA.assocs arr, e]
+    VU.ifoldr (\i e next -> if e then i+2:next else next) [] arr
 
 gcd :: (Integral a) => a -> a -> a
 gcd a b
