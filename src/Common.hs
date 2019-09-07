@@ -1,6 +1,8 @@
 module Common where
 
 import Prelude hiding (gcd)
+
+import Data.Foldable
 import Control.Monad
 import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as VUM
@@ -28,6 +30,11 @@ sumOfMults :: (Integral a) => a -> a -> a
 sumOfMults limit n
   | limit <= 0 = 0
   | otherwise = n * nSum ((limit - 1) `quot` n)
+
+combinations :: (Integral a) => a -> a -> a
+combinations n k = foldl' (\r i -> (r * (n - i + 1)) `quot` i) 1 [1..p]
+  where
+    p = min k (n - k)
 
 fastFib :: (Integral a) => a -> a
 fastFib n
