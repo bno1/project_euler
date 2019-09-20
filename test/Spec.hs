@@ -120,3 +120,4 @@ main = hspec $ do
     it "Solves #14" $ runProblem 14 `shouldBe` "837799"
     it "Solves #15" $ runProblem 15 `shouldBe` "137846528820"
     it "Solves #16" $ runProblem 16 `shouldBe` "1366"
+    it "Solves #17" $ runProblem 17 `shouldBe` "21124"
