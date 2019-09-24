@@ -1,5 +1,5 @@
 module P18
-  (solveP18
+  ( solveP18
   ) where
 
 
@@ -29,7 +29,7 @@ maxRouteStep _ _ = undefined
 
 maxRoute :: [[Int]] -> [Int]
 maxRoute [] = []
-maxRoute (row:[]) = row
+maxRoute [row] = row
 maxRoute (row:rest) = maxRouteStep row $ maxRoute rest
 
 solveP18 :: Int

@@ -58,15 +58,15 @@ fastFibSum n = fastFib (n + 2) - 1
 
 countFactorHelper :: (Integral a) => a -> a -> Word -> (a, Word)
 countFactorHelper k n c
-  | r == 0 = countFactorHelper k d $ c + 1
-  | otherwise = (n, c)
+  | n <= 1 || r /= 0 = (n, c)
+  | otherwise = countFactorHelper k d $ c + 1
   where
     (d, r) = n `quotRem` k
 
 countFactor :: (Integral a) => a -> a -> (a, Word)
 countFactor k n
   | k < 2 = error "Factor smaller than 1"
-  | n < 2 = error "Negative or zero number"
+  | n < 0 = error "Negative number"
   | otherwise = countFactorHelper k n 0
 
 reverseNum :: (Integral a) => a -> a

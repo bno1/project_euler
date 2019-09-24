@@ -1,5 +1,5 @@
 module P19
-  (solveP19
+  ( solveP19
   ) where
 
 monthDays :: Int -> Int -> Int

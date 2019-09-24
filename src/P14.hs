@@ -13,7 +13,7 @@ type Table = VU.Vector Word32
 runN :: MTable s -> Word32 -> Word32 -> ST s Word32
 runN table m n = do
   let idx = fromIntegral n
-  let n' = if even n then (n `quot` 2) else (3 * n + 1)
+  let n' = if even n then n `quot` 2 else 3 * n + 1
   let m' = m + 1
 
   if idx >= VUM.length table then runN table m' n'
