@@ -82,3 +82,9 @@ sivFactorize n = let
     let (d, _, factors) = St.execState comp (n, nlim, S.empty)
 
     return $ if d /= 1 then factors S.|> (d, 1) else factors
+
+-- compute divisors based on a factorization
+explodeFactors :: S.Seq (Word64, Word) -> [Word64]
+explodeFactors = foldr (\i divs -> divs >>= powers i) [1]
+  where
+    powers (f, cnt) = take (fromIntegral $ cnt+1) . iterate (*f)
