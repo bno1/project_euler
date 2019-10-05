@@ -130,3 +130,4 @@ main = hspec $ do
     it "Solves #21" $ runProblem 21 `shouldReturn` "31626"
     it "Solves #22" $ runProblem 22 `shouldReturn` "871198282"
     it "Solves #23" $ runProblem 23 `shouldReturn` "4179871"
+    it "Solves #24" $ runProblem 24 `shouldReturn` "2783915460"
