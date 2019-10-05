@@ -24,6 +24,7 @@ import P19 (solveP19)
 import P20 (solveP20)
 import P21 (solveP21)
 import P22 (solveP22)
+import P23 (solveP23)
 
 runProblem :: Int -> IO String
 runProblem 1 = return $ show solveP1
@@ -48,4 +49,5 @@ runProblem 19 = return $ show solveP19
 runProblem 20 = return $ show solveP20
 runProblem 21 = return $ show solveP21
 runProblem 22 = show <$> solveP22
+runProblem 23 = return $ show solveP23
 runProblem _ = return "Unknown problem"

@@ -14,7 +14,7 @@ rank r name = r * value
 
 solveP22 :: IO Int
 solveP22 = do
-    rawNames <- readFile "files/p022_names.txt"
-    let names = map read $ splitOn ',' rawNames
+  rawNames <- readFile "files/p022_names.txt"
+  let names = map read $ splitOn ',' rawNames
 
-    return $ sum $ zipWith rank [1..] $ sort names
+  return $ sum $ zipWith rank [1..] $ sort names
