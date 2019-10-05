@@ -84,6 +84,9 @@ main = hspec $ do
         checkPrim (a, b, c) = gcd a (gcd b c) == 1
       in all (\trip -> checkTrip trip && checkPrim trip) trips
 
+    it "splitOn empty" $ null $ splitOn ' ' []
+    it "splitOn string" $ splitOn ' ' " a b c   d " == ["", "a", "b", "c", "", "", "d"]
+
   describe "Sieve" $ do
     it "stepSieve" $ forAll (choose (0, 10000)) $
       \n -> let
@@ -103,25 +106,26 @@ main = hspec $ do
         n <= sivPosition (St.execState (runSieveUntil n) (newSieve b))
 
   describe "runProblem" $ do
-    it "Fails gracefully" $ runProblem 999999 `shouldBe` "Unknown problem"
-    it "Solves #1" $ runProblem 1 `shouldBe` "233168"
-    it "Solves #2" $ runProblem 2 `shouldBe` "4613732"
-    it "Solves #3" $ runProblem 3 `shouldBe` "6857"
-    it "Solves #4" $ runProblem 4 `shouldBe` "906609"
-    it "Solves #5" $ runProblem 5 `shouldBe` "232792560"
-    it "Solves #6" $ runProblem 6 `shouldBe` "25164150"
-    it "Solves #7" $ runProblem 7 `shouldBe` "104743"
-    it "Solves #8" $ runProblem 8 `shouldBe` "23514624000"
-    it "Solves #9" $ runProblem 9 `shouldBe` "31875000"
-    it "Solves #10" $ runProblem 10 `shouldBe` "142913828922"
-    it "Solves #11" $ runProblem 11 `shouldBe` "70600674"
-    it "Solves #12" $ runProblem 12 `shouldBe` "76576500"
-    it "Solves #13" $ runProblem 13 `shouldBe` "5537376230"
-    it "Solves #14" $ runProblem 14 `shouldBe` "837799"
-    it "Solves #15" $ runProblem 15 `shouldBe` "137846528820"
-    it "Solves #16" $ runProblem 16 `shouldBe` "1366"
-    it "Solves #17" $ runProblem 17 `shouldBe` "21124"
-    it "Solves #18" $ runProblem 18 `shouldBe` "1074"
-    it "Solves #19" $ runProblem 19 `shouldBe` "171"
-    it "Solves #20" $ runProblem 20 `shouldBe` "648"
-    it "Solves #21" $ runProblem 21 `shouldBe` "31626"
+    it "Fails gracefully" $ runProblem 999999 `shouldReturn` "Unknown problem"
+    it "Solves #1" $ runProblem 1 `shouldReturn` "233168"
+    it "Solves #2" $ runProblem 2 `shouldReturn` "4613732"
+    it "Solves #3" $ runProblem 3 `shouldReturn` "6857"
+    it "Solves #4" $ runProblem 4 `shouldReturn` "906609"
+    it "Solves #5" $ runProblem 5 `shouldReturn` "232792560"
+    it "Solves #6" $ runProblem 6 `shouldReturn` "25164150"
+    it "Solves #7" $ runProblem 7 `shouldReturn` "104743"
+    it "Solves #8" $ runProblem 8 `shouldReturn` "23514624000"
+    it "Solves #9" $ runProblem 9 `shouldReturn` "31875000"
+    it "Solves #10" $ runProblem 10 `shouldReturn` "142913828922"
+    it "Solves #11" $ runProblem 11 `shouldReturn` "70600674"
+    it "Solves #12" $ runProblem 12 `shouldReturn` "76576500"
+    it "Solves #13" $ runProblem 13 `shouldReturn` "5537376230"
+    it "Solves #14" $ runProblem 14 `shouldReturn` "837799"
+    it "Solves #15" $ runProblem 15 `shouldReturn` "137846528820"
+    it "Solves #16" $ runProblem 16 `shouldReturn` "1366"
+    it "Solves #17" $ runProblem 17 `shouldReturn` "21124"
+    it "Solves #18" $ runProblem 18 `shouldReturn` "1074"
+    it "Solves #19" $ runProblem 19 `shouldReturn` "171"
+    it "Solves #20" $ runProblem 20 `shouldReturn` "648"
+    it "Solves #21" $ runProblem 21 `shouldReturn` "31626"
+    it "Solves #22" $ runProblem 22 `shouldReturn` "871198282"

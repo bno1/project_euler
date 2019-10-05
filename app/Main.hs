@@ -12,5 +12,5 @@ main = do
     [arg] -> do
       let n = read arg
       putStrLn $ "Running problem #" ++ show n
-      putStrLn $ runProblem n
+      runProblem n >>= putStrLn
     _ -> putStrLn "Too many arguments"

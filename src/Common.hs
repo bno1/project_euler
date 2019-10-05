@@ -3,7 +3,9 @@ module Common where
 import Prelude hiding (gcd)
 
 import Data.Foldable
+import Data.List (unfoldr)
 import Control.Monad
+import Control.Arrow (first)
 import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as VUM
 
@@ -110,3 +112,9 @@ primPythTriplets = primPythTripletsGen 2 1
 
 iSqrt :: (Integral a) => a -> a
 iSqrt = ceiling . (sqrt :: Double -> Double) . fromIntegral
+
+splitOn :: (Eq a) => a -> [a] -> [[a]]
+splitOn c = unfoldr (\s -> if null s then Nothing else Just (go s))
+  where
+    go [] = ([], [])
+    go (x:xs) = if c == x then ([], xs) else (x:) `first` go xs
